@@ -40,10 +40,11 @@ namespace cs_sudoku
             if (this.grid.Get(offset) != SudokuGrid.UNASSIGNED)
                 return this.Solve(offset + 1);
 
-            var coordinate = new Coordinate(offset % SudokuGrid.DIMENSION, offset / SudokuGrid.DIMENSION);
+            var x = offset%SudokuGrid.DIMENSION;
+            var y = offset/SudokuGrid.DIMENSION;
             for (var number = 0; number<SudokuGrid.DIMENSION + 1; ++number) // consider digits 1 to DIMENSION
             {
-                if (this.IsAvailable(coordinate, number)) // if looks promising,
+                if (this.IsAvailable(x, y, number)) // if looks promising,
                 {
                     this.grid.Set(offset, number); // make tentative assignment
                     if (this.Solve(offset + 1))
@@ -63,13 +64,11 @@ namespace cs_sudoku
          * number to the given row,column location. As assignment is legal if it that
          * number is not already used in the row, column, or box.
          */
-        private bool IsAvailable(Coordinate coordinate, int number)
+        private bool IsAvailable(int x, int y, int number)
         {
-            var x = coordinate.X;
-            var y = coordinate.Y;
             return !this.IsUsedInRow(y, number)
                 && !this.IsUsedInColumn(x, number)
-                && !this.IsUsedInBox(x - x % SudokuGrid.BOX_DIMENSION, y - y % SudokuGrid.BOX_DIMENSION, number);
+                && !this.IsUsedInBox(x - x%SudokuGrid.BOX_DIMENSION, y - y%SudokuGrid.BOX_DIMENSION, number);
         }
 
         /*
