@@ -6,9 +6,11 @@
     internal class SudokuGrid : Grid<int>
     {
         public const int UNASSIGNED = 0;
-
-        private const int WIDTH = 9;
-        private const int HEIGHT = 9;
+        public const int DIMENSION = 9;
+        public const int CELL_COUNT = DIMENSION * DIMENSION;
+        public const int WIDTH = DIMENSION;
+        public const int HEIGHT = DIMENSION;
+        public const int BOX_DIMENSION = 3;
 
         public SudokuGrid(int[] initial)
         : base(WIDTH, HEIGHT, initial)
@@ -36,12 +38,12 @@
                         output.Append(number);
                     }
                     output.Append(' ');
-                    if ((x + 1) % 3 == 0 && x + 1 < width)
+                    if ((x + 1) % BOX_DIMENSION == 0 && x + 1 < width)
                     {
                         output.Append('|');
                     }
                 }
-                if ((y + 1) % 3 == 0 && y + 1 < width)
+                if ((y + 1) % BOX_DIMENSION == 0 && y + 1 < width)
                 {
                     output.Append("\n --------+---------+--------");
                 }

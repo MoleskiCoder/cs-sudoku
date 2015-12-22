@@ -29,7 +29,12 @@
 
         public void Set(int x, int y, T value)
         {
-            this.values[this.GetOffset(x, y)] = value;
+            this.Set(this.GetOffset(x, y), value);
+        }
+
+        public void Set(int offset, T value)
+        {
+            this.values[offset] = value;
         }
 
         public T Get(Coordinate coordinate)
@@ -39,7 +44,12 @@
 
         public T Get(int x, int y)
         {
-            return this.values[this.GetOffset(x, y)];
+            return this.Get(this.GetOffset(x, y));
+        }
+
+        public T Get(int offset)
+        {
+            return this.values[offset];
         }
 
         private int GetOffset(Coordinate coordinate)

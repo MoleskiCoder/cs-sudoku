@@ -31,50 +31,29 @@ namespace cs_sudoku
          * been examined and none worked out, return false to backtrack to previous
          * decision point.
          */
-        public bool Solve()
+        public bool Solve(int offset)
         {
-            var coordinate = new Coordinate();
-            if (!this.FindUnassignedLocation(coordinate))
-            {
+
+            if (offset == SudokuGrid.CELL_COUNT)
                 return true; // success!
-            }
-            for (var number = 1; number < 10; ++number) // consider digits 1 to 9
+
+            if (this.grid.Get(offset) != SudokuGrid.UNASSIGNED)
+                return this.Solve(offset + 1);
+
+            var coordinate = new Coordinate(offset % SudokuGrid.DIMENSION, offset / SudokuGrid.DIMENSION);
+            for (var number = 0; number<SudokuGrid.DIMENSION + 1; ++number) // consider digits 1 to DIMENSION
             {
                 if (this.IsAvailable(coordinate, number)) // if looks promising,
                 {
-                    this.grid.Set(coordinate, number); // make tentative assignment
-                    if (this.Solve())
+                    this.grid.Set(offset, number); // make tentative assignment
+                    if (this.Solve(offset + 1))
                     {
                         return true; // recur, if success, yay!
                     }
-                    this.grid.Set(coordinate, SudokuGrid.UNASSIGNED); // failure, unmake & try again
                 }
             }
+            this.grid.Set(offset, SudokuGrid.UNASSIGNED); // failure, unmake & try again
             return false; // this triggers backtracking
-        }
-
-        /*
-         * Function: FindUnassignedLocation
-         * --------------------------------
-         * Searches the grid to find an entry that is still unassigned. If found,
-         * the reference parameters row, column will be set the location that is
-         * unassigned, and true is returned. If no unassigned entries remain, false
-         * is returned.
-         */
-        private bool FindUnassignedLocation(Coordinate coordinate) {
-            for (var y = 0; y < this.height; ++y)
-            {
-                coordinate.Y = y;
-                for (var x = 0; x < this.width; ++x)
-                {
-                    coordinate.X = x;
-                    if (this.grid.Get(coordinate) == SudokuGrid.UNASSIGNED)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         /*
@@ -90,7 +69,7 @@ namespace cs_sudoku
             var y = coordinate.Y;
             return !this.IsUsedInRow(y, number)
                 && !this.IsUsedInColumn(x, number)
-                && !this.IsUsedInBox(x - x % 3, y - y % 3, number);
+                && !this.IsUsedInBox(x - x % SudokuGrid.BOX_DIMENSION, y - y % SudokuGrid.BOX_DIMENSION, number);
         }
 
         /*
@@ -101,9 +80,10 @@ namespace cs_sudoku
          */
         private bool IsUsedInRow(int y, int number)
         {
+            var offset = y*SudokuGrid.DIMENSION;
             for (var x = 0; x < this.width; ++x)
             {
-                if (this.grid.Get(x, y) == number)
+                if (this.grid.Get(offset++) == number)
                 {
                     return true;
                 }
@@ -119,12 +99,14 @@ namespace cs_sudoku
          */
         private bool IsUsedInColumn(int x, int number)
         {
+            var offset = x;
             for (var y = 0; y < this.height; ++y)
             {
-                if (this.grid.Get(x, y) == number)
+                if (this.grid.Get(offset) == number)
                 {
                     return true;
                 }
+                offset += SudokuGrid.DIMENSION;
             }
             return false;
         }
@@ -136,11 +118,14 @@ namespace cs_sudoku
          * within the specified 3x3 box matches the given number.
          */
         private bool IsUsedInBox(int boxStartX, int boxStartY, int number) {
-            for (var y = 0; y < 3; ++y)
+            for (var yOffset = 0; yOffset < SudokuGrid.BOX_DIMENSION; ++yOffset)
             {
-                for (var x = 0; x < 3; ++x)
+                var x = boxStartX;
+                var y = yOffset + boxStartY;
+                var offset = x + y*SudokuGrid.DIMENSION;
+                for (var xOffset = 0; xOffset < SudokuGrid.BOX_DIMENSION; ++xOffset)
                 {
-                    if (this.grid.Get(x + boxStartX, y + boxStartY) == number)
+                    if (this.grid.Get(offset++) == number)
                     {
                         return true;
                     }
