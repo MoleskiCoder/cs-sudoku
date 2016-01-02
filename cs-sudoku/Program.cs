@@ -24,7 +24,7 @@
             var solver = new Solver(puzzle);
 
             var start = DateTime.Now;
-            var solved = solver.Solve(0);
+            var solved = solver.Solve();
             var finish = DateTime.Now;
 
             if (solved)

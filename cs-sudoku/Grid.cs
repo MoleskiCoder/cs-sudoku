@@ -24,7 +24,7 @@
 
         public void Set(Coordinate coordinate, T value)
         {
-            this.values[this.GetOffset(coordinate)] = value;
+            this.Set(this.GetOffset(coordinate), value);
         }
 
         public void Set(int x, int y, T value)
@@ -39,7 +39,7 @@
 
         public T Get(Coordinate coordinate)
         {
-            return this.values[this.GetOffset(coordinate)];
+            return this.Get(this.GetOffset(coordinate));
         }
 
         public T Get(int x, int y)
